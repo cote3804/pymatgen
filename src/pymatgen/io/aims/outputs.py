@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
+from datetime import datetime
 from monty.json import MontyDecoder, MSONable
 
 from pymatgen.io.aims.parsers import (
@@ -54,7 +55,10 @@ class AimsOutput(MSONable):
 
     def as_dict(self) -> dict[str, Any]:
         """Create a dict representation of the outputs for MSONable."""
-        dct: dict[str, Any] = {"@module": type(self).__module__, "@class": type(self).__name__}
+        dct: dict[str, Any] = {
+            "@module": type(self).__module__,
+            "@class": type(self).__name__,
+        }
 
         dct["results"] = self._results
         dct["metadata"] = self._metadata
@@ -219,3 +223,9 @@ class AimsOutput(MSONable):
         """The forces for all images in the calculation."""
         all_forces_array = [res.site_properties.get("force", None) for res in self._results]
         return [af.tolist() if isinstance(af, np.ndarray) else af for af in all_forces_array]
+
+    @property
+    def total_time(self) -> float:
+        """The total time for the calculation in seconds."""
+        return self.get_results_for_image(-1).properties
+        # return self.get_results_for_image(-1).properties.get("total_time")

@@ -60,6 +60,7 @@ SCALAR_PROPERTY_TO_LINE_KEY = {
     "n_spins": ["| Number of spin channels"],
     "electronic_temp": ["Occupation type:"],
     "fermi_energy": ["| Chemical potential (Fermi level)"],
+    "total_time": ["| Total time       "],
 }
 
 
@@ -489,6 +490,7 @@ class AimsOutCalcChunk(AimsOutChunk):
             "hirshfeld_atomic_dipoles": "hirshfeld_atomic_dipole",
             "mulliken_charges": "charge",
             "mulliken_spins": "magmom",
+            # "total_time": "total_time",
         }
         properties = {prop: results[prop] for prop in results if prop not in site_prop_keys}
         for prop, site_key in site_prop_keys.items():
@@ -499,7 +501,9 @@ class AimsOutCalcChunk(AimsOutChunk):
             np.sum(magmom) - properties["magmom"]
         ) < 1e-3:
             warnings.warn(
-                "Total magnetic moment and sum of Mulliken spins are not consistent", UserWarning, stacklevel=1
+                "Total magnetic moment and sum of Mulliken spins are not consistent",
+                UserWarning,
+                stacklevel=1,
             )
 
         if lattice is not None:
@@ -519,7 +523,9 @@ class AimsOutCalcChunk(AimsOutChunk):
             properties=properties,
         )
 
-    def _parse_lattice_atom_pos(self) -> tuple[list[str], list[Vector3D], list[Vector3D], Lattice | None]:
+    def _parse_lattice_atom_pos(
+        self,
+    ) -> tuple[list[str], list[Vector3D], list[Vector3D], Lattice | None]:
         """Parse the lattice and atomic positions of the structure.
 
         Returns:
@@ -573,36 +579,48 @@ class AimsOutCalcChunk(AimsOutChunk):
     def species(self) -> list[str]:
         """The list of atomic symbols for all atoms in the structure."""
         if "species" not in self._cache:
-            self._cache["species"], self._cache["coords"], self._cache["velocities"], self._cache["lattice"] = (
-                self._parse_lattice_atom_pos()
-            )
+            (
+                self._cache["species"],
+                self._cache["coords"],
+                self._cache["velocities"],
+                self._cache["lattice"],
+            ) = self._parse_lattice_atom_pos()
         return self._cache["species"]
 
     @property
     def coords(self) -> list[Vector3D]:
         """The cartesian coordinates of the atoms."""
         if "coords" not in self._cache:
-            self._cache["species"], self._cache["coords"], self._cache["velocities"], self._cache["lattice"] = (
-                self._parse_lattice_atom_pos()
-            )
+            (
+                self._cache["species"],
+                self._cache["coords"],
+                self._cache["velocities"],
+                self._cache["lattice"],
+            ) = self._parse_lattice_atom_pos()
         return self._cache["coords"]
 
     @property
     def velocities(self) -> list[Vector3D]:
         """The velocities of the atoms."""
         if "velocities" not in self._cache:
-            self._cache["species"], self._cache["coords"], self._cache["velocities"], self._cache["lattice"] = (
-                self._parse_lattice_atom_pos()
-            )
+            (
+                self._cache["species"],
+                self._cache["coords"],
+                self._cache["velocities"],
+                self._cache["lattice"],
+            ) = self._parse_lattice_atom_pos()
         return self._cache["velocities"]
 
     @property
     def lattice(self) -> Lattice:
         """The Lattice object for the structure."""
         if "lattice" not in self._cache:
-            self._cache["species"], self._cache["coords"], self._cache["velocities"], self._cache["lattice"] = (
-                self._parse_lattice_atom_pos()
-            )
+            (
+                self._cache["species"],
+                self._cache["coords"],
+                self._cache["velocities"],
+                self._cache["lattice"],
+            ) = self._parse_lattice_atom_pos()
         return self._cache["lattice"]
 
     @property
@@ -825,6 +843,7 @@ class AimsOutCalcChunk(AimsOutChunk):
             "cbm": self.cbm,
             "gap": self.gap,
             "direct_gap": self.direct_gap,
+            "total_time": self.total_time,
         }
 
         return {key: value for key, value in results.items() if value is not None}
@@ -970,6 +989,11 @@ class AimsOutCalcChunk(AimsOutChunk):
     def direct_gap(self) -> float:
         """The direct bandgap."""
         return self._parse_homo_lumo()["direct_gap"]
+
+    @property
+    def total_time(self) -> float | None:
+        """The total time for the calculation in seconds"""
+        return self.parse_scalar("total_time")
 
 
 def get_lines(content: str | TextIOWrapper) -> list[str]:
