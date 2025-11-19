@@ -806,6 +806,12 @@ class JDFTXOutfile:
         return self.slices[-1].to_jdftxinfile()
 
     def __post_init__(self):
+        if not isinstance(self.slices, list):
+            raise TypeError(
+                "slices must be a list of JDFTXOutfileSlice objects.\n"
+                "hint: use JDFTXOutfile.from_file() or JDFTXOutfile.from_calc_dir()"
+                " to create a JDFTXOutfile object from a file."
+            )
         last_slice = None
         for slc in self.slices[::-1]:
             if slc is not None:

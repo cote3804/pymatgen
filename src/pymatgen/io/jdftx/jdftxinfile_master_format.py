@@ -1146,6 +1146,7 @@ MASTER_TAG_LIST: dict[str, dict[str, Any]] = {
                 "omegaMin": FloatTag(),
                 "T": FloatTag(),
                 "omegaResolution": FloatTag(),
+                "dumpK": BoolTag(),
             }
         ),
         "barostat-velocity": TagContainer(
