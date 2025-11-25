@@ -501,7 +501,7 @@ MASTER_TAG_LIST: dict[str, dict[str, Any]] = {
         "elec-n-bands": TagContainer(
             subtags={
                 "n": IntTag(write_tagname=False, optional=False, lb=0, lb_incl=False),
-                "multiplier": FloatTag(write_tagname=True, optional=True, lb=1.0, lb_incl=True),
+                "multiplier": FloatTag(write_tagname=False, optional=True, lb=1.0, lb_incl=True),
             }
         ),
         "spintype": StrTag(options=["no-spin", "spin-orbit", "vector-spin", "z-spin"]),
