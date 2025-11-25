@@ -500,7 +500,7 @@ MASTER_TAG_LIST: dict[str, dict[str, Any]] = {
         # "elec-n-bands": IntTag(),
         "elec-n-bands": TagContainer(
             subtags={
-                "n": IntTag(write_tagname=False, optional=False, lb=0, lb_incl=False),
+                "n": IntTag(write_tagname=False, optional=False, lb=0, lb_incl=True),
                 "multiplier": FloatTag(write_tagname=False, optional=True, lb=1.0, lb_incl=True),
             }
         ),
