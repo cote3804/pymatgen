@@ -180,6 +180,7 @@ class JDFTXInfile(dict, MSONable):
             instance.validate_boundaries()
         return instance
 
+    # TODO: This can be cleaned up by generalizing kwargs that are passed to from_str
     @classmethod
     def from_file(
         cls,
@@ -309,6 +310,7 @@ class JDFTXInfile(dict, MSONable):
         sort_tags: bool = True,
         path_parent: Path | None = None,
         validate_value_boundaries: bool = True,
+        skip_invalid_tags: bool = False,
     ) -> JDFTXInfile:
         """Read a JDFTXInfile object from a string.
 
@@ -329,9 +331,17 @@ class JDFTXInfile(dict, MSONable):
         params: dict[str, Any] = {}
         # process all tag value lines using specified tag formats in MASTER_TAG_LIST
         for line in lines:
-            tag_object, tag, value = cls._preprocess_line(line)
-            processed_value = tag_object.read(tag, value)
-            params = cls._store_value(params, tag_object, tag, processed_value)  # this will change with tag categories
+            try:
+                tag_object, tag, value = cls._preprocess_line(line)
+                processed_value = tag_object.read(tag, value)
+                params = cls._store_value(
+                    params, tag_object, tag, processed_value
+                )  # this will change with tag categories
+            except ValueError as e:
+                if skip_invalid_tags:
+                    warnings.warn(f"Skipping invalid tag line: '{line}'. Error: {e}", stacklevel=2)
+                    continue
+                raise
         pop_idcs = []
         if "include" in params:
             for i, filename in enumerate(params["include"]):

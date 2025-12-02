@@ -428,7 +428,7 @@ class JDFTXOutfileSlice:
         if end_line_idx is None:
             raise ValueError("Calculation did not begin for this out file slice.")
         self.infile = JDFTXInfile.from_str(
-            "\n".join(text[start_line_idx:end_line_idx]), validate_value_boundaries=False
+            "\n".join(text[start_line_idx:end_line_idx]), validate_value_boundaries=False, skip_invalid_tags=True
         )
         self.constant_lattice = True
         if "lattice-minimize" in self.infile:
