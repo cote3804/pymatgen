@@ -1223,7 +1223,7 @@ class JDFTXStructure(MSONable):
         ]
         coords_are_cartesian = False  # is default for JDFTx
         if "coords-type" in jdftxinfile:
-            coords_are_cartesian = jdftxinfile["coords-type"] == "Cartesian"
+            coords_are_cartesian = jdftxinfile["coords-type"].lower() == "cartesian"
         if coords_are_cartesian:
             coords *= bohr_to_ang
             if not _allnone(velocities):
