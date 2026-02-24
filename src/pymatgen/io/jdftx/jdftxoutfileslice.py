@@ -794,9 +794,9 @@ class JDFTXOutfileSlice:
             ]
         )
         element_semicore_electrons = element_total_electrons - element_valence_electrons
-        self.total_electrons_uncharged = np.sum(element_total_electrons)
-        self.valence_electrons_uncharged = np.sum(element_valence_electrons)
-        self.semicore_electrons_uncharged = np.sum(element_semicore_electrons)
+        self.total_electrons_uncharged = sum(element_total_electrons)
+        self.valence_electrons_uncharged = sum(element_valence_electrons)
+        self.semicore_electrons_uncharged = sum(element_semicore_electrons)
         self.semicore_electrons = self.semicore_electrons_uncharged
         if (self.total_electrons is not None) and (self.semicore_electrons is not None):
             self.valence_electrons = self.total_electrons - self.semicore_electrons  # accounts for if system is charged
