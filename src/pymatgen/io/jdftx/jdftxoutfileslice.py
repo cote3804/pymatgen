@@ -1061,7 +1061,7 @@ class JDFTXOutfileSlice:
         lines = find_all_key("elec-n-bands", text)
         if len(lines):
             line = lines[0]
-            nbands = int(text[line].strip().split()[-1].strip())
+            nbands = int(text[line].strip().split()[1].strip())
         else:
             lines = find_all_key("nBands:", text)
             line = lines[0]
